@@ -31,7 +31,9 @@ import {
   Users, 
   Trash2,
   Loader2,
-  Share2
+  Share2,
+  Facebook,
+  Instagram
 } from 'lucide-react';
 import { format } from 'date-fns';
 import StreakHeatmap from './StreakHeatmap';
