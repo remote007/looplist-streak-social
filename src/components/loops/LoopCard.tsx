@@ -30,17 +30,13 @@ import {
   Globe, 
   Users, 
   Trash2,
-  Loader2 
+  Loader2,
+  Share2
 } from 'lucide-react';
 import { format } from 'date-fns';
 import StreakHeatmap from './StreakHeatmap';
-import { Facebook, Instagram, Share2, WhatsApp } from 'lucide-react';
-import { 
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+import { toast } from '@/components/ui/sonner';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 
 interface LoopCardProps {
   loop: Loop;
@@ -61,7 +57,6 @@ const LoopCard = ({ loop, onUpdate, onDelete }: LoopCardProps) => {
       const updatedLoop = await loopService.updateDayStatus(loop.id, today, status);
       onUpdate(updatedLoop);
       
-      // Show confirmation briefly
       setShowConfirmation(true);
       setTimeout(() => {
         setShowConfirmation(false);
@@ -85,7 +80,7 @@ const LoopCard = ({ loop, onUpdate, onDelete }: LoopCardProps) => {
     }
   };
 
-  const handleShare = (platform: 'facebook' | 'instagram' | 'whatsapp') => {
+  const handleShare = (platform: 'facebook' | 'instagram') => {
     const shareText = `Check out my habit loop "${loop.title}" on LoopList! I'm on a ${loop.currentStreak} day streak! 🎯`;
     const shareUrl = `${window.location.origin}/loops/${loop.id}`;
 
@@ -94,12 +89,8 @@ const LoopCard = ({ loop, onUpdate, onDelete }: LoopCardProps) => {
         window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}&quote=${encodeURIComponent(shareText)}`);
         break;
       case 'instagram':
-        // Instagram doesn't support direct sharing, copy to clipboard instead
         navigator.clipboard.writeText(`${shareText}\n\n${shareUrl}`);
         toast('Share text copied to clipboard! Open Instagram to share.');
-        break;
-      case 'whatsapp':
-        window.open(`https://wa.me/?text=${encodeURIComponent(`${shareText}\n\n${shareUrl}`)}`);
         break;
     }
   };
@@ -171,10 +162,6 @@ const LoopCard = ({ loop, onUpdate, onDelete }: LoopCardProps) => {
                   <DropdownMenuItem onClick={() => handleShare('instagram')}>
                     <Instagram className="h-4 w-4 mr-2" />
                     Share on Instagram
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => handleShare('whatsapp')}>
-                    <WhatsApp className="h-4 w-4 mr-2" />
-                    Share on WhatsApp
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
