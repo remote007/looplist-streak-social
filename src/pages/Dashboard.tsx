@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -62,9 +61,22 @@ const Dashboard = () => {
     longestStreak: loops.reduce((max, loop) => Math.max(max, loop.longestStreak), 0),
   };
 
+  const createLoopDialog = (
+    <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+      <DialogContent className="sm:max-w-[500px]">
+        <DialogHeader>
+          <DialogTitle>Create New Loop</DialogTitle>
+          <DialogDescription>
+            Add a new habit loop to track. Start small and build consistency.
+          </DialogDescription>
+        </DialogHeader>
+        <CreateLoopForm onLoopCreated={handleLoopCreated} />
+      </DialogContent>
+    </Dialog>
+  );
+
   return (
     <div className="space-y-8">
-      {/* Welcome and Stats */}
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader className="pb-2">
@@ -104,7 +116,6 @@ const Dashboard = () => {
         </Card>
       </div>
 
-      {/* Tabs and Loops */}
       <div className="space-y-4">
         <div className="flex items-center justify-between">
           <h2 className="text-2xl font-bold tracking-tight">Your Loops</h2>
@@ -153,11 +164,13 @@ const Dashboard = () => {
                 </div>
                 <h3 className="text-lg font-medium mb-2">No loops found</h3>
                 <p className="text-muted-foreground mb-6">Get started by creating your first loop</p>
-                <DialogTrigger asChild>
-                  <Button>
-                    <Plus className="mr-2 h-4 w-4" /> Create Your First Loop
-                  </Button>
-                </DialogTrigger>
+                <Dialog>
+                  <DialogTrigger asChild>
+                    <Button onClick={() => setIsDialogOpen(true)}>
+                      <Plus className="mr-2 h-4 w-4" /> Create Your First Loop
+                    </Button>
+                  </DialogTrigger>
+                </Dialog>
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -180,11 +193,13 @@ const Dashboard = () => {
                 </div>
                 <h3 className="text-lg font-medium mb-2">No active loops</h3>
                 <p className="text-muted-foreground mb-6">Create a new loop to start building habits</p>
-                <DialogTrigger asChild>
-                  <Button>
-                    <Plus className="mr-2 h-4 w-4" /> Create New Loop
-                  </Button>
-                </DialogTrigger>
+                <Dialog>
+                  <DialogTrigger asChild>
+                    <Button onClick={() => setIsDialogOpen(true)}>
+                      <Plus className="mr-2 h-4 w-4" /> Create New Loop
+                    </Button>
+                  </DialogTrigger>
+                </Dialog>
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -245,6 +260,8 @@ const Dashboard = () => {
           </TabsContent>
         </Tabs>
       </div>
+
+      {createLoopDialog}
     </div>
   );
 };
