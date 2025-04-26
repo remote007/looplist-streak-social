@@ -26,6 +26,7 @@ const App = () => (
             {/* Dashboard Routes - Protected by DashboardLayout */}
             <Route element={<DashboardLayout />}>
               <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/analytics" element={<Analytics />} />
               <Route path="/explore" element={<Explore />} />
               <Route path="/profile" element={<div className="text-center py-10">Profile page coming soon!</div>} />
               <Route path="/settings" element={<div className="text-center py-10">Settings page coming soon!</div>} />

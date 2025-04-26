@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { 
   Card, 
@@ -35,6 +34,13 @@ import {
 } from 'lucide-react';
 import { format } from 'date-fns';
 import StreakHeatmap from './StreakHeatmap';
+import { Facebook, Instagram, Share2, WhatsApp } from 'lucide-react';
+import { 
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 
 interface LoopCardProps {
   loop: Loop;
@@ -79,6 +85,25 @@ const LoopCard = ({ loop, onUpdate, onDelete }: LoopCardProps) => {
     }
   };
 
+  const handleShare = (platform: 'facebook' | 'instagram' | 'whatsapp') => {
+    const shareText = `Check out my habit loop "${loop.title}" on LoopList! I'm on a ${loop.currentStreak} day streak! 🎯`;
+    const shareUrl = `${window.location.origin}/loops/${loop.id}`;
+
+    switch (platform) {
+      case 'facebook':
+        window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}&quote=${encodeURIComponent(shareText)}`);
+        break;
+      case 'instagram':
+        // Instagram doesn't support direct sharing, copy to clipboard instead
+        navigator.clipboard.writeText(`${shareText}\n\n${shareUrl}`);
+        toast('Share text copied to clipboard! Open Instagram to share.');
+        break;
+      case 'whatsapp':
+        window.open(`https://wa.me/?text=${encodeURIComponent(`${shareText}\n\n${shareUrl}`)}`);
+        break;
+    }
+  };
+
   const formatFrequency = (frequency: string) => {
     switch (frequency) {
       case 'daily': return 'Daily';
@@ -107,7 +132,6 @@ const LoopCard = ({ loop, onUpdate, onDelete }: LoopCardProps) => {
     }
   };
 
-  // Check if the user has already checked in for today
   const today = new Date().toISOString().split('T')[0];
   const todayStatus = loop.days[today];
   const hasCheckedIn = todayStatus === 'checked';
@@ -132,6 +156,29 @@ const LoopCard = ({ loop, onUpdate, onDelete }: LoopCardProps) => {
           <div className="flex items-center gap-2">
             {getStatusIcon()}
             {getVisibilityIcon()}
+            {loop.visibility === 'public' && (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="icon">
+                    <Share2 className="h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem onClick={() => handleShare('facebook')}>
+                    <Facebook className="h-4 w-4 mr-2" />
+                    Share on Facebook
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => handleShare('instagram')}>
+                    <Instagram className="h-4 w-4 mr-2" />
+                    Share on Instagram
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => handleShare('whatsapp')}>
+                    <WhatsApp className="h-4 w-4 mr-2" />
+                    Share on WhatsApp
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            )}
           </div>
         </div>
       </CardHeader>

@@ -1,21 +1,16 @@
-
 import { Loop, LoopFrequency, LoopVisibility, DayStatus, PublicLoop, LoopStatus } from '../types';
 import { authService } from './authService';
 import { toast } from '@/components/ui/sonner';
 
-// Session storage key
 const LOOPS_KEY = 'looplist_loops';
 const PUBLIC_LOOPS_KEY = 'looplist_public_loops';
 
-// Helper function to generate a unique ID
 const generateId = (): string => {
   return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
 };
 
-// Helper function to simulate API delay
 const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
-// Helper function to get loops from session storage
 const getLoopsFromStorage = (): Loop[] => {
   const loopsJson = sessionStorage.getItem(LOOPS_KEY);
   if (!loopsJson) {
@@ -30,12 +25,10 @@ const getLoopsFromStorage = (): Loop[] => {
   }
 };
 
-// Helper function to save loops to session storage
 const saveLoopsToStorage = (loops: Loop[]): void => {
   sessionStorage.setItem(LOOPS_KEY, JSON.stringify(loops));
 };
 
-// Helper function to get public loops from session storage
 const getPublicLoopsFromStorage = (): PublicLoop[] => {
   const loopsJson = sessionStorage.getItem(PUBLIC_LOOPS_KEY);
   if (!loopsJson) {
@@ -50,7 +43,6 @@ const getPublicLoopsFromStorage = (): PublicLoop[] => {
   }
 };
 
-// Helper to calculate days since start
 const calculateDaysSinceStart = (startDate: string): number => {
   const start = new Date(startDate);
   const today = new Date();
@@ -58,30 +50,25 @@ const calculateDaysSinceStart = (startDate: string): number => {
   return Math.floor(diffTime / (1000 * 60 * 60 * 24));
 };
 
-// Helper to generate initial day statuses
 const generateInitialDays = (startDate: string, frequency: LoopFrequency): Record<string, DayStatus> => {
   const days: Record<string, DayStatus> = {};
   const start = new Date(startDate);
   const today = new Date();
   
-  // Start with start date and go until today
   let currentDate = new Date(start);
   
   while (currentDate <= today) {
     const dateKey = currentDate.toISOString().split('T')[0];
     
-    // Determine if this day should be tracked based on frequency
     let shouldTrack = true;
     
     if (frequency === 'weekdays') {
       const dayOfWeek = currentDate.getDay();
-      shouldTrack = dayOfWeek !== 0 && dayOfWeek !== 6; // 0 is Sunday, 6 is Saturday
+      shouldTrack = dayOfWeek !== 0 && dayOfWeek !== 6;
     } else if (frequency === '3x-week') {
-      // For demo purposes, we'll track Monday, Wednesday, Friday
       const dayOfWeek = currentDate.getDay();
       shouldTrack = dayOfWeek === 1 || dayOfWeek === 3 || dayOfWeek === 5;
     } else if (frequency === 'custom') {
-      // For demo purposes, we'll track every other day
       const daysSinceStart = Math.floor((currentDate.getTime() - start.getTime()) / (1000 * 60 * 60 * 24));
       shouldTrack = daysSinceStart % 2 === 0;
     }
@@ -94,14 +81,12 @@ const generateInitialDays = (startDate: string, frequency: LoopFrequency): Recor
       }
     }
     
-    // Move to next day
     currentDate.setDate(currentDate.getDate() + 1);
   }
   
   return days;
 };
 
-// Helper to calculate streak metrics
 const calculateStreakMetrics = (days: Record<string, DayStatus>): { currentStreak: number, longestStreak: number, completionRate: number } => {
   let currentStreak = 0;
   let longestStreak = 0;
@@ -143,9 +128,7 @@ const calculateStreakMetrics = (days: Record<string, DayStatus>): { currentStrea
   };
 };
 
-// Helper to determine loop status
 const determineLoopStatus = (days: Record<string, DayStatus>): LoopStatus => {
-  // Check the most recent day
   const sortedDates = Object.keys(days).sort().reverse();
   for (const date of sortedDates) {
     if (days[date] === 'missed') {
@@ -155,10 +138,9 @@ const determineLoopStatus = (days: Record<string, DayStatus>): LoopStatus => {
     }
   }
   
-  return 'active'; // Default to active
+  return 'active';
 };
 
-// Initialize with some demo data
 const initializeDemo = () => {
   if (!sessionStorage.getItem(LOOPS_KEY)) {
     const currentUser = authService.getCurrentUser();
@@ -171,7 +153,7 @@ const initializeDemo = () => {
           title: "Read 10 pages every day",
           emoji: "📚",
           frequency: "daily",
-          startDate: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000).toISOString(), // 14 days ago
+          startDate: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000).toISOString(),
           visibility: "public",
           status: "active",
           currentStreak: 7,
@@ -196,7 +178,7 @@ const initializeDemo = () => {
           title: "No sugar after 7pm",
           emoji: "🍬",
           frequency: "daily",
-          startDate: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(), // 7 days ago
+          startDate: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
           visibility: "private",
           status: "active",
           currentStreak: 5,
@@ -213,7 +195,7 @@ const initializeDemo = () => {
           title: "10-minute meditation",
           emoji: "🧘",
           frequency: "weekdays",
-          startDate: new Date(Date.now() - 21 * 24 * 60 * 60 * 1000).toISOString(), // 21 days ago
+          startDate: new Date(Date.now() - 21 * 24 * 60 * 60 * 1000).toISOString(),
           visibility: "public",
           status: "broken",
           currentStreak: 0,
@@ -234,17 +216,14 @@ const initializeDemo = () => {
         }
       ];
       
-      // Generate days for each loop
       demoLoops.forEach(loop => {
         loop.days = generateInitialDays(loop.startDate, loop.frequency);
         
-        // Calculate metrics
         const metrics = calculateStreakMetrics(loop.days);
         loop.currentStreak = metrics.currentStreak;
         loop.longestStreak = metrics.longestStreak;
         loop.completionRate = metrics.completionRate;
         
-        // Determine status
         loop.status = determineLoopStatus(loop.days);
       });
       
@@ -252,7 +231,6 @@ const initializeDemo = () => {
     }
   }
   
-  // Initialize public loops if not already initialized
   if (!sessionStorage.getItem(PUBLIC_LOOPS_KEY)) {
     const demoPublicLoops: PublicLoop[] = [
       {
@@ -266,7 +244,7 @@ const initializeDemo = () => {
         title: "Morning stretches",
         emoji: "🤸",
         frequency: "daily",
-        startDate: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(), // 30 days ago
+        startDate: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(),
         visibility: "public",
         status: "active",
         currentStreak: 30,
@@ -300,7 +278,7 @@ const initializeDemo = () => {
         title: "Write in journal",
         emoji: "✍️",
         frequency: "weekdays",
-        startDate: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000).toISOString(), // 14 days ago
+        startDate: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000).toISOString(),
         visibility: "public",
         status: "active",
         currentStreak: 10,
@@ -326,7 +304,7 @@ const initializeDemo = () => {
         title: "Learn 5 new words in Spanish",
         emoji: "🇪🇸",
         frequency: "daily",
-        startDate: new Date(Date.now() - 45 * 24 * 60 * 60 * 1000).toISOString(), // 45 days ago
+        startDate: new Date(Date.now() - 45 * 24 * 60 * 60 * 1000).toISOString(),
         visibility: "public",
         status: "broken",
         currentStreak: 0,
@@ -360,7 +338,7 @@ const initializeDemo = () => {
         title: "Practice guitar for 15 minutes",
         emoji: "🎸",
         frequency: "daily",
-        startDate: new Date(Date.now() - 60 * 24 * 60 * 60 * 1000).toISOString(), // 60 days ago
+        startDate: new Date(Date.now() - 60 * 24 * 60 * 60 * 1000).toISOString(),
         visibility: "public",
         status: "active",
         currentStreak: 60,
@@ -397,10 +375,8 @@ const initializeDemo = () => {
 };
 
 export const loopService = {
-  // Initialize the demo data
   initializeDemo,
   
-  // Get all loops for the current user
   getUserLoops: async (): Promise<Loop[]> => {
     await delay(500);
     
@@ -413,7 +389,6 @@ export const loopService = {
     return loops.filter(loop => loop.userId === currentUser.id);
   },
   
-  // Get a specific loop by ID
   getLoop: async (id: string): Promise<Loop> => {
     await delay(300);
     
@@ -432,7 +407,6 @@ export const loopService = {
     return loop;
   },
   
-  // Create a new loop
   createLoop: async (loopData: Omit<Loop, 'id' | 'userId' | 'currentStreak' | 'longestStreak' | 'completionRate' | 'createdAt' | 'updatedAt' | 'status' | 'days' | 'cheers'>): Promise<Loop> => {
     await delay(800);
     
@@ -457,19 +431,16 @@ export const loopService = {
       cheers: []
     };
     
-    // Calculate metrics
     const metrics = calculateStreakMetrics(newLoop.days);
     newLoop.currentStreak = metrics.currentStreak;
     newLoop.longestStreak = metrics.longestStreak;
     newLoop.completionRate = metrics.completionRate;
     
-    // Determine status
     newLoop.status = determineLoopStatus(newLoop.days);
     
     loops.push(newLoop);
     saveLoopsToStorage(loops);
     
-    // If the loop is public, add it to public loops
     if (loopData.visibility === 'public') {
       const publicLoops = getPublicLoopsFromStorage();
       
@@ -501,7 +472,6 @@ export const loopService = {
     return newLoop;
   },
   
-  // Update an existing loop
   updateLoop: async (id: string, updates: Partial<Loop>): Promise<Loop> => {
     await delay(500);
     
@@ -517,27 +487,23 @@ export const loopService = {
       throw new Error('Loop not found');
     }
     
-    // Update the loop
     loops[loopIndex] = {
       ...loops[loopIndex],
       ...updates,
       updatedAt: new Date().toISOString()
     };
     
-    // If days were updated, recalculate metrics
     if (updates.days) {
       const metrics = calculateStreakMetrics(loops[loopIndex].days);
       loops[loopIndex].currentStreak = metrics.currentStreak;
       loops[loopIndex].longestStreak = metrics.longestStreak;
       loops[loopIndex].completionRate = metrics.completionRate;
       
-      // Determine status
       loops[loopIndex].status = determineLoopStatus(loops[loopIndex].days);
     }
     
     saveLoopsToStorage(loops);
     
-    // If the loop is public, update it in public loops
     if (loops[loopIndex].visibility === 'public') {
       const publicLoops = getPublicLoopsFromStorage();
       const publicIndex = publicLoops.findIndex(loop => loop.id === id);
@@ -565,7 +531,6 @@ export const loopService = {
         
         sessionStorage.setItem(PUBLIC_LOOPS_KEY, JSON.stringify(publicLoops));
       } else {
-        // If not found in public loops, add it
         const daysCount = Object.values(loops[loopIndex].days).reduce(
           (acc, status) => {
             if (status === 'checked') acc.checked++;
@@ -590,7 +555,6 @@ export const loopService = {
         sessionStorage.setItem(PUBLIC_LOOPS_KEY, JSON.stringify(publicLoops));
       }
     } else {
-      // If the loop is private, remove it from public loops if it exists
       let publicLoops = getPublicLoopsFromStorage();
       publicLoops = publicLoops.filter(loop => loop.id !== id);
       sessionStorage.setItem(PUBLIC_LOOPS_KEY, JSON.stringify(publicLoops));
@@ -599,7 +563,6 @@ export const loopService = {
     return loops[loopIndex];
   },
   
-  // Delete a loop
   deleteLoop: async (id: string): Promise<void> => {
     await delay(500);
     
@@ -613,7 +576,6 @@ export const loopService = {
     
     saveLoopsToStorage(loops);
     
-    // Remove from public loops if it exists
     let publicLoops = getPublicLoopsFromStorage();
     publicLoops = publicLoops.filter(loop => loop.id !== id);
     sessionStorage.setItem(PUBLIC_LOOPS_KEY, JSON.stringify(publicLoops));
@@ -621,7 +583,6 @@ export const loopService = {
     toast('Loop deleted successfully');
   },
   
-  // Update day status (check-in)
   updateDayStatus: async (loopId: string, date: string, status: DayStatus): Promise<Loop> => {
     await delay(300);
     
@@ -637,25 +598,28 @@ export const loopService = {
       throw new Error('Loop not found');
     }
     
-    // Update the day status
     loops[loopIndex].days = {
       ...loops[loopIndex].days,
       [date]: status
     };
     
-    // Recalculate metrics
     const metrics = calculateStreakMetrics(loops[loopIndex].days);
     loops[loopIndex].currentStreak = metrics.currentStreak;
     loops[loopIndex].longestStreak = metrics.longestStreak;
     loops[loopIndex].completionRate = metrics.completionRate;
     loops[loopIndex].updatedAt = new Date().toISOString();
     
-    // Determine status
-    loops[loopIndex].status = determineLoopStatus(loops[loopIndex].days);
+    const dayCount = Object.keys(loops[loopIndex].days).length;
+    if (dayCount >= 30 && metrics.completionRate >= 90) {
+      loops[loopIndex].status = 'completed';
+    } else if (status === 'missed') {
+      loops[loopIndex].status = 'broken';
+    } else {
+      loops[loopIndex].status = 'active';
+    }
     
     saveLoopsToStorage(loops);
     
-    // If the loop is public, update it in public loops
     if (loops[loopIndex].visibility === 'public') {
       const publicLoops = getPublicLoopsFromStorage();
       const publicIndex = publicLoops.findIndex(loop => loop.id === loopId);
@@ -687,18 +651,18 @@ export const loopService = {
     
     if (status === 'checked') {
       toast('Great job! You checked in for today.');
+    } else if (status === 'missed') {
+      toast('No worries, you can get back on track tomorrow!');
     }
     
     return loops[loopIndex];
   },
   
-  // Get public loops
   getPublicLoops: async (): Promise<PublicLoop[]> => {
     await delay(800);
     return getPublicLoopsFromStorage();
   },
   
-  // Add a cheer to a loop
   addCheer: async (loopId: string, emoji: string): Promise<void> => {
     await delay(300);
     
@@ -707,7 +671,6 @@ export const loopService = {
       throw new Error('No authenticated user');
     }
     
-    // Update the loop in public loops
     const publicLoops = getPublicLoopsFromStorage();
     const loopIndex = publicLoops.findIndex(loop => loop.id === loopId);
     
@@ -715,18 +678,15 @@ export const loopService = {
       throw new Error('Loop not found');
     }
     
-    // Check if user already cheered with this emoji
     const alreadyCheered = publicLoops[loopIndex].cheers.some(
       cheer => cheer.userId === currentUser.id && cheer.emoji === emoji
     );
     
     if (alreadyCheered) {
-      // Remove the cheer (toggle)
       publicLoops[loopIndex].cheers = publicLoops[loopIndex].cheers.filter(
         cheer => !(cheer.userId === currentUser.id && cheer.emoji === emoji)
       );
     } else {
-      // Add the cheer
       publicLoops[loopIndex].cheers.push({
         id: generateId(),
         userId: currentUser.id,
@@ -738,7 +698,6 @@ export const loopService = {
     
     sessionStorage.setItem(PUBLIC_LOOPS_KEY, JSON.stringify(publicLoops));
     
-    // If the loop belongs to the current user, update it in personal loops as well
     if (publicLoops[loopIndex].userId === currentUser.id) {
       const loops = getLoopsFromStorage();
       const personalLoopIndex = loops.findIndex(loop => loop.id === loopId);
@@ -756,7 +715,6 @@ export const loopService = {
     }
   },
   
-  // Clone a loop from public to personal
   cloneLoop: async (publicLoopId: string): Promise<Loop> => {
     await delay(800);
     
@@ -772,25 +730,25 @@ export const loopService = {
       throw new Error('Public loop not found');
     }
     
-    // Create a new personal loop based on the public one
     const loops = getLoopsFromStorage();
     
+    const today = new Date().toISOString().split('T')[0];
     const newLoop: Loop = {
       id: generateId(),
       userId: currentUser.id,
-      title: publicLoop.title,
+      title: `${publicLoop.title} (Cloned)`,
       emoji: publicLoop.emoji,
       coverImage: publicLoop.coverImage,
       frequency: publicLoop.frequency,
-      startDate: new Date().toISOString(), // Start from today
-      visibility: 'private', // Default to private
+      startDate: today,
+      visibility: 'private',
       status: 'active',
       currentStreak: 0,
       longestStreak: 0,
       completionRate: 0,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
-      days: { [new Date().toISOString().split('T')[0]]: 'pending' },
+      days: { [today]: 'pending' },
       cheers: []
     };
     
