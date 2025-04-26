@@ -1,0 +1,77 @@
+
+/* Default Theme */
+.theme-default {
+  --font-primary: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --color-primary: #8B5CF6;
+  --color-secondary: #6D28D9;
+  --color-accent: #C4B5FD;
+  --color-background: #F9FAFB;
+  --color-card: #FFFFFF;
+  --color-border: #E5E7EB;
+  --color-text: #1F2937;
+  --color-text-muted: #6B7280;
+  --border-radius: 0.5rem;
+  --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+/* Modern Theme */
+.theme-modern {
+  --font-primary: 'Inter', sans-serif;
+  --color-primary: #0EA5E9;
+  --color-secondary: #0284C7;
+  --color-accent: #BAE6FD;
+  --color-background: #0F172A;
+  --color-card: #1E293B;
+  --color-border: #334155;
+  --color-text: #F1F5F9;
+  --color-text-muted: #94A3B8;
+  --border-radius: 0.75rem;
+  --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.2);
+}
+
+/* Vintage Theme */
+.theme-vintage {
+  --font-primary: 'Playfair Display', serif;
+  --color-primary: #B45309;
+  --color-secondary: #92400E;
+  --color-accent: #FDE68A;
+  --color-background: #FFFBEB;
+  --color-card: #FEF3C7;
+  --color-border: #FBBF24;
+  --color-text: #78350F;
+  --color-text-muted: #92400E;
+  --border-radius: 0.25rem;
+  --shadow: 0 4px 6px -1px rgba(120, 53, 15, 0.1), 0 2px 4px -1px rgba(120, 53, 15, 0.06);
+}
+
+/* Apply theme variables to common elements */
+body {
+  font-family: var(--font-primary);
+  background-color: var(--color-background);
+  color: var(--color-text);
+}
+
+.card, .dialog, .popover {
+  background-color: var(--color-card);
+  border-color: var(--color-border);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow);
+}
+
+button.primary {
+  background-color: var(--color-primary);
+  color: white;
+}
+
+button.secondary {
+  background-color: var(--color-secondary);
+  color: white;
+}
+
+.accent {
+  color: var(--color-accent);
+}
+
+.text-muted {
+  color: var(--color-text-muted);
+}

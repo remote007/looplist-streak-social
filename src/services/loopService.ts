@@ -554,10 +554,6 @@ export const loopService = {
         publicLoops.push(publicLoop);
         sessionStorage.setItem(PUBLIC_LOOPS_KEY, JSON.stringify(publicLoops));
       }
-    } else {
-      let publicLoops = getPublicLoopsFromStorage();
-      publicLoops = publicLoops.filter(loop => loop.id !== id);
-      sessionStorage.setItem(PUBLIC_LOOPS_KEY, JSON.stringify(publicLoops));
     }
     
     return loops[loopIndex];
@@ -612,9 +608,9 @@ export const loopService = {
     const dayCount = Object.keys(loops[loopIndex].days).length;
     if (dayCount >= 30 && metrics.completionRate >= 90) {
       loops[loopIndex].status = 'completed';
-    } else if (status === 'missed') {
+    } else if (status === 'missed' && metrics.currentStreak === 0) {
       loops[loopIndex].status = 'broken';
-    } else {
+    } else if (metrics.currentStreak > 0) {
       loops[loopIndex].status = 'active';
     }
     
@@ -756,6 +752,9 @@ export const loopService = {
     saveLoopsToStorage(loops);
     
     toast(`Cloned "${publicLoop.title}" to your loops`);
+    
+    loopService.initializeDemo();
+    
     return newLoop;
   }
 };

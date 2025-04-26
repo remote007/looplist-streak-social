@@ -12,7 +12,7 @@ import { toast } from "@/components/ui/sonner";
 import { Loader2 } from "lucide-react";
 
 const Profile = () => {
-  const { user, setUser } = useAuth();
+  const { user, updateProfile } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
     name: user?.name || '',
@@ -32,12 +32,11 @@ const Profile = () => {
     
     try {
       setIsLoading(true);
-      const updatedUser = await authService.updateProfile({
+      await updateProfile({
         name: formData.name,
         avatar: formData.avatar,
       });
       
-      setUser(updatedUser);
       toast('Profile updated successfully');
     } catch (error) {
       console.error('Error updating profile:', error);

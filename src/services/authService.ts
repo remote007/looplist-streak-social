@@ -76,7 +76,12 @@ export const authService = {
       name,
       email,
       password,
-      avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${name}`
+      avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${name}`,
+      accountStats: {
+        totalLoops: 0,
+        publicLoops: 0,
+        totalCheers: 0
+      }
     };
     
     // Add to mock users (in a real app, this would be a database call)

@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { 
   Card, 
@@ -32,8 +33,8 @@ import {
   Trash2,
   Loader2,
   Share2,
-  Facebook,
-  Instagram
+  Facebook as FacebookIcon,  // Renamed import to solve naming conflict
+  Instagram as InstagramIcon  // Renamed import to solve naming conflict
 } from 'lucide-react';
 import { format } from 'date-fns';
 import StreakHeatmap from './StreakHeatmap';
@@ -158,11 +159,11 @@ const LoopCard = ({ loop, onUpdate, onDelete }: LoopCardProps) => {
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
                   <DropdownMenuItem onClick={() => handleShare('facebook')}>
-                    <Facebook className="h-4 w-4 mr-2" />
+                    <FacebookIcon className="h-4 w-4 mr-2" />
                     Share on Facebook
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={() => handleShare('instagram')}>
-                    <Instagram className="h-4 w-4 mr-2" />
+                    <InstagramIcon className="h-4 w-4 mr-2" />
                     Share on Instagram
                   </DropdownMenuItem>
                 </DropdownMenuContent>
