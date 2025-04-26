@@ -9,14 +9,24 @@ const mockUsers = [
     name: 'Demo User',
     email: 'demo@example.com',
     password: 'password123',
-    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Coco'
+    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Coco',
+    accountStats: {
+      totalLoops: 3,
+      publicLoops: 2,
+      totalCheers: 4
+    }
   },
   {
     id: 'user2',
     name: 'Jane Smith',
     email: 'jane@example.com',
     password: 'password123',
-    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Jane'
+    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Jane',
+    accountStats: {
+      totalLoops: 5,
+      publicLoops: 3,
+      totalCheers: 7
+    }
   }
 ];
 
@@ -116,6 +126,15 @@ export const authService = {
     const currentUser = authService.getCurrentUser();
     if (!currentUser) {
       throw new Error('No authenticated user');
+    }
+    
+    // Find the user in mockUsers array and update their info as well
+    const userIndex = mockUsers.findIndex(user => user.id === currentUser.id);
+    if (userIndex !== -1) {
+      mockUsers[userIndex] = { 
+        ...mockUsers[userIndex], 
+        ...updates 
+      };
     }
     
     const updatedUser = { ...currentUser, ...updates };

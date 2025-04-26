@@ -9,6 +9,8 @@ import Landing from "./pages/Landing";
 import Dashboard from "./pages/Dashboard";
 import Analytics from "./pages/Analytics";
 import Explore from "./pages/Explore";
+import Profile from "./pages/Profile";
+import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
 import DashboardLayout from "./layouts/DashboardLayout";
 
@@ -29,8 +31,8 @@ const App = () => (
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/analytics" element={<Analytics />} />
               <Route path="/explore" element={<Explore />} />
-              <Route path="/profile" element={<div className="text-center py-10">Profile page coming soon!</div>} />
-              <Route path="/settings" element={<div className="text-center py-10">Settings page coming soon!</div>} />
+              <Route path="/profile" element={<Profile />} />
+              <Route path="/settings" element={<Settings />} />
             </Route>
             
             <Route path="*" element={<NotFound />} />

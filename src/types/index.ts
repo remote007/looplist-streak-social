@@ -1,28 +1,16 @@
-
-export type User = {
-  id: string;
-  name: string;
-  email: string;
-  avatar?: string;
-};
-
-export type LoopFrequency = 'daily' | 'weekdays' | 'custom' | '3x-week';
-
+export type LoopFrequency = 'daily' | 'weekdays' | '3x-week' | 'custom';
 export type LoopVisibility = 'private' | 'public' | 'friends';
-
+export type DayStatus = 'pending' | 'checked' | 'missed' | 'future';
 export type LoopStatus = 'active' | 'broken' | 'completed';
-
-export type DayStatus = 'checked' | 'missed' | 'pending' | 'future';
 
 export interface Loop {
   id: string;
   userId: string;
   title: string;
-  emoji?: string;
+  emoji: string;
   coverImage?: string;
   frequency: LoopFrequency;
-  startDate: string; // ISO date string
-  endDate?: string; // ISO date string
+  startDate: string;
   visibility: LoopVisibility;
   status: LoopStatus;
   currentStreak: number;
@@ -30,8 +18,22 @@ export interface Loop {
   completionRate: number;
   createdAt: string;
   updatedAt: string;
-  days: Record<string, DayStatus>; // { "2023-04-26": "checked" }
+  days: Record<string, DayStatus>;
   cheers: Cheer[];
+}
+
+export interface PublicLoop extends Omit<Loop, 'userId' | 'days'> {
+  userId: string;
+  user: {
+    id: string;
+    name: string;
+    avatar: string;
+  };
+  daysCount: {
+    checked: number;
+    missed: number;
+    pending: number;
+  };
 }
 
 export interface Cheer {
@@ -42,15 +44,14 @@ export interface Cheer {
   timestamp: string;
 }
 
-export interface PublicLoop extends Omit<Loop, 'days'> {
-  user: {
-    id: string;
-    name: string;
-    avatar?: string;
-  };
-  daysCount: {
-    checked: number;
-    missed: number;
-    pending: number;
+export interface User {
+  id: string;
+  name: string;
+  email: string;
+  avatar: string;
+  accountStats?: {
+    totalLoops: number;
+    publicLoops: number;
+    totalCheers: number;
   };
 }
